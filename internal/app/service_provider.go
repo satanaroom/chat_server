@@ -3,74 +3,46 @@ package app
 import (
 	"context"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	authV1 "github.com/satanaroom/auth/pkg/auth_v1"
 	"github.com/satanaroom/auth/pkg/logger"
-	"github.com/satanaroom/chat_server/internal/client/pg"
+
+	authClient "github.com/satanaroom/chat_server/internal/clients/grpc/auth"
 	"github.com/satanaroom/chat_server/internal/closer"
 	"github.com/satanaroom/chat_server/internal/config"
-	chatRepository "github.com/satanaroom/chat_server/internal/repository/chat"
 	chatService "github.com/satanaroom/chat_server/internal/service/chat"
+	"google.golang.org/grpc"
 )
 
 type serviceProvider struct {
-	pgConfig config.PGConfig
+	authConfig config.AuthClientConfig
 
-	pgClient       pg.Client
-	chatRepository chatRepository.Repository
-	chatService    chatService.Service
+	authClient  authClient.Client
+	chatService chatService.Service
 }
 
 func newServiceProvider() *serviceProvider {
 	return &serviceProvider{}
 }
 
-func (s *serviceProvider) PGConfig() config.PGConfig {
-	if s.pgConfig == nil {
-		cfg, err := config.NewPGConfig()
-		if err != nil {
-			logger.Fatalf("failed to get pg config: %s", err.Error())
-		}
-
-		s.pgConfig = cfg
-	}
-
-	return s.pgConfig
-}
-
-func (s *serviceProvider) PGClient(ctx context.Context) pg.Client {
-	if s.pgClient == nil {
-		pgCfg, err := pgxpool.ParseConfig(s.PGConfig().DSN())
-		if err != nil {
-			logger.Fatalf("failed to get db config: %s", err.Error())
-		}
-
-		client, err := pg.NewClient(ctx, pgCfg)
-		if err != nil {
-			logger.Fatalf("failed to initialize pg clients: %s", err.Error())
-		}
-
-		if err = client.PG().Ping(ctx); err != nil {
-			logger.Fatalf("failed to ping pg: %s", err.Error())
-		}
-
-		closer.Add(client.Close)
-		s.pgClient = client
-	}
-	return s.pgClient
-}
-
-func (s *serviceProvider) ChatRepository(ctx context.Context) chatRepository.Repository {
-	if s.chatRepository == nil {
-		s.chatRepository = chatRepository.NewRepository(s.PGClient(ctx))
-	}
-
-	return s.chatRepository
-}
-
-func (s *serviceProvider) ServiceProvider(ctx context.Context) chatService.Service {
+func (s *serviceProvider) ChatService(_ context.Context) chatService.Service {
 	if s.chatService == nil {
-		s.chatService = chatService.NewService(s.ChatRepository(ctx))
+		s.chatService = chatService.NewService()
 	}
 
 	return s.chatService
+}
+
+func (s *serviceProvider) AuthClient(_ context.Context) authClient.Client {
+	if s.authClient == nil {
+		conn, err := grpc.Dial(s.authConfig.Port(), grpc.WithDefaultCallOptions())
+		if err != nil {
+			logger.Fatalf("failed to connect %s: %s", s.authConfig.Port(), err.Error())
+		}
+		closer.Add(conn.Close)
+
+		client := authV1.NewAuthV1Client(conn)
+		s.authClient = authClient.NewClient(client)
+	}
+
+	return s.authClient
 }
