@@ -24,9 +24,9 @@ func newServiceProvider() *serviceProvider {
 	return &serviceProvider{}
 }
 
-func (s *serviceProvider) ChatService(_ context.Context) chatService.Service {
+func (s *serviceProvider) ChatService(ctx context.Context) chatService.Service {
 	if s.chatService == nil {
-		s.chatService = chatService.NewService()
+		s.chatService = chatService.NewService(s.AuthClient(ctx))
 	}
 
 	return s.chatService
