@@ -5,6 +5,7 @@ import (
 
 	accessV1 "github.com/satanaroom/auth/pkg/access_v1"
 	"github.com/satanaroom/auth/pkg/logger"
+	chatV1 "github.com/satanaroom/chat_server/internal/api/chat_v1"
 	"google.golang.org/grpc/credentials/insecure"
 
 	authClient "github.com/satanaroom/chat_server/internal/clients/grpc/auth"
@@ -15,10 +16,15 @@ import (
 )
 
 type serviceProvider struct {
-	authConfig config.AuthClientConfig
+	authConfig    config.AuthClientConfig
+	grpcConfig    config.GRPCConfig
+	httpConfig    config.HTTPConfig
+	swaggerConfig config.SwaggerConfig
 
 	authClient  authClient.Client
 	chatService chatService.Service
+
+	chatImpl *chatV1.Implementation
 }
 
 func newServiceProvider() *serviceProvider {
@@ -61,4 +67,51 @@ func (s *serviceProvider) AuthClient(ctx context.Context) authClient.Client {
 	}
 
 	return s.authClient
+}
+
+func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
+	if s.grpcConfig == nil {
+		cfg, err := config.NewGRPCConfig()
+		if err != nil {
+			logger.Fatalf("failed to get grpc config: %s", err.Error())
+		}
+
+		s.grpcConfig = cfg
+	}
+
+	return s.grpcConfig
+}
+
+func (s *serviceProvider) HTTPConfig() config.HTTPConfig {
+	if s.httpConfig == nil {
+		cfg, err := config.NewHTTPConfig()
+		if err != nil {
+			logger.Fatalf("failed to get http config: %s", err.Error())
+		}
+
+		s.httpConfig = cfg
+	}
+
+	return s.httpConfig
+}
+
+func (s *serviceProvider) SwaggerConfig() config.SwaggerConfig {
+	if s.swaggerConfig == nil {
+		cfg, err := config.NewSwaggerConfig()
+		if err != nil {
+			logger.Fatalf("failed to get swagger config: %s", err.Error())
+		}
+
+		s.swaggerConfig = cfg
+	}
+
+	return s.swaggerConfig
+}
+
+func (s *serviceProvider) ChatImpl(ctx context.Context) *chatV1.Implementation {
+	if s.chatImpl == nil {
+		s.chatImpl = chatV1.NewImplementation(s.ChatService(ctx))
+	}
+
+	return s.chatImpl
 }

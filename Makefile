@@ -25,7 +25,7 @@ generate-chat-api:
     --plugin=protoc-gen-validate=bin/protoc-gen-validate \
     --grpc-gateway_out=pkg/chat_v1 --grpc-gateway_opt=paths=source_relative \
     --plugin=protoc-gen-go-grpc-gateway=bin/protoc-gen-go-grpc-gateway \
-    --openapiv2_out=allow_merge=true,merge_file_name=api:pkg/swagger \
+    --openapiv2_out=allow_merge=true,merge_file_name=chat:pkg/swagger \
 	--plugin=protoc-gen-openapiv2=bin/protoc-gen-openapiv2 \
 	api/chat_v1/chat.proto
 
