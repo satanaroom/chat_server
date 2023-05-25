@@ -1,34 +1,30 @@
 package config
 
 import (
-	"os"
-
-	"github.com/satanaroom/chat_server/internal/errs"
+	"github.com/satanaroom/auth/pkg/env"
 )
 
 var _ AuthClientConfig = (*authClientConfig)(nil)
 
-const authPortEnvName = "AUTH_PORT"
+const authHostEnvName = "AUTH_HOST"
 
 type AuthClientConfig interface {
-	Port() string
+	Host() string
 }
 
 type authClientConfig struct {
-	port string
+	host string
 }
 
 func NewAuthClientConfig() (*authClientConfig, error) {
-	port := os.Getenv(authPortEnvName)
-	if port == "" {
-		return nil, errs.ErrAuthClientPortNotFound
-	}
+	var host string
+	env.ToString(&host, authHostEnvName, "localhost:50051")
 
 	return &authClientConfig{
-		port: port,
+		host: host,
 	}, nil
 }
 
-func (c *authClientConfig) Port() string {
-	return c.port
+func (c *authClientConfig) Host() string {
+	return c.host
 }

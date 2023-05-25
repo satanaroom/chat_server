@@ -6,6 +6,7 @@ import (
 
 	"github.com/satanaroom/chat_server/internal/closer"
 	"github.com/satanaroom/chat_server/internal/config"
+	"google.golang.org/grpc/metadata"
 )
 
 type App struct {
@@ -22,13 +23,24 @@ func NewApp(ctx context.Context) (*App, error) {
 	return a, nil
 }
 
+const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODQ5OTYwMjAsInVzZXJuYW1lIjoicTJxMnEyIiwicm9sZSI6MX0.2isMeJ0mNhOXF6Z1NSimeP6W7LMfhKmfEcL_MPWFn1M"
+
 func (a *App) Run() error {
 	defer func() {
 		closer.CloseAll()
 		closer.Wait()
 	}()
+	ctx := context.Background()
 
-	// TODO: run some server
+	m := map[string]string{
+		"Authorization": "Bearer " + accessToken,
+	}
+	md := metadata.New(m)
+
+	ctx = metadata.NewOutgoingContext(ctx, md)
+
+	ok, err := a.serviceProvider.AuthClient(ctx).Check(ctx, "bla")
+	fmt.Println(err, ok)
 
 	return nil
 }

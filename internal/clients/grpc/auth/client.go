@@ -4,32 +4,31 @@ import (
 	"context"
 	"fmt"
 
-	authV1 "github.com/satanaroom/auth/pkg/auth_v1"
-	"github.com/satanaroom/chat_server/internal/converter/client/auth"
-	"github.com/satanaroom/chat_server/internal/model"
+	accessV1 "github.com/satanaroom/auth/pkg/access_v1"
 )
 
 var _ Client = (*client)(nil)
 
 type Client interface {
-	Create(ctx context.Context, info *model.UserInfo) (int64, error)
+	Check(ctx context.Context, endpoint string) (bool, error)
 }
 
 type client struct {
-	authClient authV1.AuthV1Client
+	accessClient accessV1.AccessV1Client
 }
 
-func NewClient(cl authV1.AuthV1Client) *client {
+func NewClient(cl accessV1.AccessV1Client) *client {
 	return &client{
-		authClient: cl,
+		accessClient: cl,
 	}
 }
 
-func (c *client) Create(ctx context.Context, info *model.UserInfo) (int64, error) {
-	resp, err := c.authClient.Create(ctx, auth.ToCreateRequest(info))
-	if err != nil {
-		return 0, fmt.Errorf("authClient.Create: %w", err)
+func (c *client) Check(ctx context.Context, endpoint string) (bool, error) {
+	if _, err := c.accessClient.Check(ctx, &accessV1.CheckRequest{
+		EndpointAddress: endpoint,
+	}); err != nil {
+		return false, fmt.Errorf("accessClient.Check: %w", err)
 	}
 
-	return auth.FromCreateResponse(resp), nil
+	return true, nil
 }
