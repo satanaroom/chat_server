@@ -43,7 +43,7 @@ func (s *serviceProvider) AuthClientConfig() config.AuthClientConfig {
 	if s.authConfig == nil {
 		cfg, err := config.NewAuthClientConfig()
 		if err != nil {
-			logger.Fatalf("failed to get auth client config: %s", err.Error())
+			logger.Fatalf("failed to get access client config: %s", err.Error())
 		}
 
 		s.authConfig = cfg
