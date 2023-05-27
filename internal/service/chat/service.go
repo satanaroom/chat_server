@@ -1,10 +1,16 @@
 package chat
 
-import authClient "github.com/satanaroom/chat_server/internal/clients/grpc/auth"
+import (
+	"context"
+
+	authClient "github.com/satanaroom/chat_server/internal/clients/grpc/auth"
+	"github.com/satanaroom/chat_server/internal/model"
+)
 
 var _ Service = (*service)(nil)
 
 type Service interface {
+	CreateChat(ctx context.Context, usernames *model.CreateChat) (int64, error)
 }
 
 type service struct {
