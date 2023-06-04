@@ -6,13 +6,12 @@ import (
 	accessV1 "github.com/satanaroom/auth/pkg/access_v1"
 	"github.com/satanaroom/auth/pkg/logger"
 	chatV1 "github.com/satanaroom/chat_server/internal/api/chat_v1"
-	"google.golang.org/grpc/credentials/insecure"
-
 	authClient "github.com/satanaroom/chat_server/internal/clients/grpc/auth"
 	"github.com/satanaroom/chat_server/internal/closer"
 	"github.com/satanaroom/chat_server/internal/config"
 	chatService "github.com/satanaroom/chat_server/internal/service/chat"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 type serviceProvider struct {
@@ -20,9 +19,12 @@ type serviceProvider struct {
 	grpcConfig    config.GRPCConfig
 	httpConfig    config.HTTPConfig
 	swaggerConfig config.SwaggerConfig
+	tlsConfig     config.TLSConfig
 
 	authClient  authClient.Client
 	chatService chatService.Service
+
+	tlsCredentials credentials.TransportCredentials
 
 	chatImpl *chatV1.Implementation
 }
@@ -54,7 +56,7 @@ func (s *serviceProvider) AuthClientConfig() config.AuthClientConfig {
 
 func (s *serviceProvider) AuthClient(ctx context.Context) authClient.Client {
 	if s.authClient == nil {
-		opts := grpc.WithTransportCredentials(insecure.NewCredentials())
+		opts := grpc.WithTransportCredentials(s.TLSCredentials(ctx))
 
 		conn, err := grpc.DialContext(ctx, s.AuthClientConfig().Host(), opts)
 		if err != nil {
@@ -108,10 +110,36 @@ func (s *serviceProvider) SwaggerConfig() config.SwaggerConfig {
 	return s.swaggerConfig
 }
 
+func (s *serviceProvider) TLSConfig() config.TLSConfig {
+	if s.tlsConfig == nil {
+		cfg, err := config.NewTLSConfig()
+		if err != nil {
+			logger.Fatalf("failed to get TLS config: %s", err.Error())
+		}
+
+		s.tlsConfig = cfg
+	}
+
+	return s.tlsConfig
+}
+
 func (s *serviceProvider) ChatImpl(ctx context.Context) *chatV1.Implementation {
 	if s.chatImpl == nil {
 		s.chatImpl = chatV1.NewImplementation(s.ChatService(ctx))
 	}
 
 	return s.chatImpl
+}
+
+func (s *serviceProvider) TLSCredentials(_ context.Context) credentials.TransportCredentials {
+	if s.tlsCredentials == nil {
+		creds, err := credentials.NewClientTLSFromFile(s.TLSConfig().CertFile(), "")
+		if err != nil {
+			logger.Fatalf("new client tls from file: %s", err.Error())
+		}
+
+		s.tlsCredentials = creds
+	}
+
+	return s.tlsCredentials
 }

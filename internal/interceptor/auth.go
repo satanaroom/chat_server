@@ -2,7 +2,6 @@ package interceptor
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/satanaroom/chat_server/internal/clients/grpc/auth"
 	"google.golang.org/grpc"
@@ -28,7 +27,7 @@ func (i *authInterceptor) Unary() grpc.UnaryServerInterceptor {
 
 		ok, err = i.authClient.Check(ctx, info.FullMethod)
 		if err != nil || !ok {
-			return nil, fmt.Errorf("check access: %w", err)
+			return nil, err
 		}
 
 		return handler(ctx, req)
