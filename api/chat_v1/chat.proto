@@ -3,6 +3,8 @@ syntax = "proto3";
 package chat_v1;
 
 import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -31,6 +33,18 @@ service ChatV1 {
       body: "*"
     };
   };
+  rpc ConnectChat(ConnectChatRequest) returns (stream ConnectChatResponse) {
+    option (google.api.http) = {
+      post: "/chat/v1/connect"
+      body: "*"
+    };
+  };
+  rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/chat/v1/send"
+      body: "*"
+    };
+  }
 }
 
 message CreateChatRequest {
@@ -42,3 +56,21 @@ message CreateChatResponse {
   int64 chat_id = 1;
 }
 
+message ConnectChatRequest {
+  int64 chat_id = 1;
+}
+
+message Message {
+  string text = 1;
+  string from = 2;
+  string to = 3;
+  google.protobuf.Timestamp sent_at = 4;
+}
+
+message ConnectChatResponse {
+  Message message = 1;
+}
+
+message SendMessageRequest {
+  Message message = 1;
+}

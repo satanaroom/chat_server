@@ -282,3 +282,502 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreateChatResponseValidationError{}
+
+// Validate checks the field values on ConnectChatRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ConnectChatRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ConnectChatRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ConnectChatRequestMultiError, or nil if none found.
+func (m *ConnectChatRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ConnectChatRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ChatId
+
+	if len(errors) > 0 {
+		return ConnectChatRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ConnectChatRequestMultiError is an error wrapping multiple validation errors
+// returned by ConnectChatRequest.ValidateAll() if the designated constraints
+// aren't met.
+type ConnectChatRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ConnectChatRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ConnectChatRequestMultiError) AllErrors() []error { return m }
+
+// ConnectChatRequestValidationError is the validation error returned by
+// ConnectChatRequest.Validate if the designated constraints aren't met.
+type ConnectChatRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ConnectChatRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ConnectChatRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ConnectChatRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ConnectChatRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ConnectChatRequestValidationError) ErrorName() string {
+	return "ConnectChatRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ConnectChatRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sConnectChatRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ConnectChatRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ConnectChatRequestValidationError{}
+
+// Validate checks the field values on Message with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *Message) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Message with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in MessageMultiError, or nil if none found.
+func (m *Message) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Message) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Text
+
+	// no validation rules for From
+
+	// no validation rules for To
+
+	if all {
+		switch v := interface{}(m.GetSentAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MessageValidationError{
+					field:  "SentAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MessageValidationError{
+					field:  "SentAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSentAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MessageValidationError{
+				field:  "SentAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return MessageMultiError(errors)
+	}
+
+	return nil
+}
+
+// MessageMultiError is an error wrapping multiple validation errors returned
+// by Message.ValidateAll() if the designated constraints aren't met.
+type MessageMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m MessageMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m MessageMultiError) AllErrors() []error { return m }
+
+// MessageValidationError is the validation error returned by Message.Validate
+// if the designated constraints aren't met.
+type MessageValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MessageValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MessageValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MessageValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MessageValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MessageValidationError) ErrorName() string { return "MessageValidationError" }
+
+// Error satisfies the builtin error interface
+func (e MessageValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMessage.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MessageValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MessageValidationError{}
+
+// Validate checks the field values on ConnectChatResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ConnectChatResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ConnectChatResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ConnectChatResponseMultiError, or nil if none found.
+func (m *ConnectChatResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ConnectChatResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetMessage()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ConnectChatResponseValidationError{
+					field:  "Message",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ConnectChatResponseValidationError{
+					field:  "Message",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetMessage()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ConnectChatResponseValidationError{
+				field:  "Message",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return ConnectChatResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ConnectChatResponseMultiError is an error wrapping multiple validation
+// errors returned by ConnectChatResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ConnectChatResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ConnectChatResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ConnectChatResponseMultiError) AllErrors() []error { return m }
+
+// ConnectChatResponseValidationError is the validation error returned by
+// ConnectChatResponse.Validate if the designated constraints aren't met.
+type ConnectChatResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ConnectChatResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ConnectChatResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ConnectChatResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ConnectChatResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ConnectChatResponseValidationError) ErrorName() string {
+	return "ConnectChatResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ConnectChatResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sConnectChatResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ConnectChatResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ConnectChatResponseValidationError{}
+
+// Validate checks the field values on SendMessageRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *SendMessageRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SendMessageRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// SendMessageRequestMultiError, or nil if none found.
+func (m *SendMessageRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SendMessageRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetMessage()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, SendMessageRequestValidationError{
+					field:  "Message",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, SendMessageRequestValidationError{
+					field:  "Message",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetMessage()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return SendMessageRequestValidationError{
+				field:  "Message",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return SendMessageRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// SendMessageRequestMultiError is an error wrapping multiple validation errors
+// returned by SendMessageRequest.ValidateAll() if the designated constraints
+// aren't met.
+type SendMessageRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SendMessageRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SendMessageRequestMultiError) AllErrors() []error { return m }
+
+// SendMessageRequestValidationError is the validation error returned by
+// SendMessageRequest.Validate if the designated constraints aren't met.
+type SendMessageRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SendMessageRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SendMessageRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SendMessageRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SendMessageRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SendMessageRequestValidationError) ErrorName() string {
+	return "SendMessageRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SendMessageRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSendMessageRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SendMessageRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SendMessageRequestValidationError{}

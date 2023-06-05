@@ -25,6 +25,47 @@
     "application/json"
   ],
   "paths": {
+    "/chat/v1/connect": {
+      "post": {
+        "operationId": "ChatV1_ConnectChat",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/chat_v1ConnectChatResponse"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of chat_v1ConnectChatResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/chat_v1ConnectChatRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ChatV1"
+        ]
+      }
+    },
     "/chat/v1/create": {
       "post": {
         "operationId": "ChatV1_CreateChat",
@@ -56,9 +97,59 @@
           "ChatV1"
         ]
       }
+    },
+    "/chat/v1/send": {
+      "post": {
+        "operationId": "ChatV1_SendMessage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/chat_v1SendMessageRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ChatV1"
+        ]
+      }
     }
   },
   "definitions": {
+    "chat_v1ConnectChatRequest": {
+      "type": "object",
+      "properties": {
+        "chatId": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "chat_v1ConnectChatResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "$ref": "#/definitions/chat_v1Message"
+        }
+      }
+    },
     "chat_v1CreateChatRequest": {
       "type": "object",
       "properties": {
@@ -76,6 +167,32 @@
         "chatId": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "chat_v1Message": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "sentAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "chat_v1SendMessageRequest": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "$ref": "#/definitions/chat_v1Message"
         }
       }
     },
