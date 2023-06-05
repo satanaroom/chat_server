@@ -9,7 +9,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/rakyll/statik v0.1.7
 	github.com/rs/cors v1.9.0
-	github.com/satanaroom/auth v0.0.0-20230524093436-fc87469d3ad5
+	github.com/satanaroom/auth v0.0.0-20230526072419-e465008b530c
 	google.golang.org/genproto v0.0.0-20230525154841-bd750badd5c6
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
