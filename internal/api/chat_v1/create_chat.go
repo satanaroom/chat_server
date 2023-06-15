@@ -3,7 +3,7 @@ package chat_v1
 import (
 	"context"
 
-	converter "github.com/satanaroom/chat_server/internal/converter/client/access"
+	converter "github.com/satanaroom/chat_server/internal/converter/client"
 	desc "github.com/satanaroom/chat_server/pkg/chat_v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

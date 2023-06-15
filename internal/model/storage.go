@@ -1,5 +1,5 @@
 package model
 
-type CreateChat struct {
+type ChatUsers struct {
 	Usernames []string
 }

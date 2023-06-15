@@ -10,6 +10,7 @@ import (
 	"github.com/satanaroom/chat_server/internal/closer"
 	"github.com/satanaroom/chat_server/internal/config"
 	chatService "github.com/satanaroom/chat_server/internal/service/chat"
+	"github.com/satanaroom/chat_server/internal/storage"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -35,7 +36,8 @@ func newServiceProvider() *serviceProvider {
 
 func (s *serviceProvider) ChatService(ctx context.Context) chatService.Service {
 	if s.chatService == nil {
-		s.chatService = chatService.NewService(s.AuthClient(ctx))
+		chatStorage := storage.NewStorage()
+		s.chatService = chatService.NewService(s.AuthClient(ctx), chatStorage)
 	}
 
 	return s.chatService
