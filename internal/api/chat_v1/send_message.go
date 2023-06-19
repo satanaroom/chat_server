@@ -8,9 +8,12 @@ import (
 )
 
 func (i *Implementation) SendMessage(_ context.Context, req *desc.SendMessageRequest) (*empty.Empty, error) {
-	if err := i.chatService.SendMessage(req.GetChatId(), req.GetMessage()); err != nil {
+	chatChannel, err := i.chatService.GetChatChannel(req.GetChatId())
+	if err != nil {
 		return nil, err
 	}
+
+	chatChannel <- req.GetMessage()
 
 	return &empty.Empty{}, nil
 }

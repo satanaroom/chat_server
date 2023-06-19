@@ -29,19 +29,21 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 service ChatV1 {
   rpc CreateChat(CreateChatRequest) returns (CreateChatResponse) {
     option (google.api.http) = {
-      post: "/server/v1/create"
+      post: "/chat/v1/create"
       body: "*"
     };
   };
+
   rpc ConnectChat(ConnectChatRequest) returns (stream ConnectChatResponse) {
     option (google.api.http) = {
-      post: "/server/v1/connect"
+      post: "/chat/v1/connect"
       body: "*"
     };
   };
+
   rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/server/v1/send"
+      post: "/chat/v1/send"
       body: "*"
     };
   }

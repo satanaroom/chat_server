@@ -15,7 +15,7 @@ func (s *service) CreateChat(_ context.Context, usernames *model.CreateChat) (st
 		return "", sys.NewCommonError("failed to generate UUID", codes.Internal)
 	}
 
-	s.chatStorage.CreateChannel(chatID.String())
+	s.channels.CreateChannel(chatID.String())
 
 	return chatID.String(), nil
 }

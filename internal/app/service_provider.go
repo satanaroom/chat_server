@@ -6,11 +6,11 @@ import (
 	accessV1 "github.com/satanaroom/auth/pkg/access_v1"
 	"github.com/satanaroom/auth/pkg/logger"
 	chatV1 "github.com/satanaroom/chat_server/internal/api/chat_v1"
+	"github.com/satanaroom/chat_server/internal/channels"
 	authClient "github.com/satanaroom/chat_server/internal/clients/grpc/auth"
 	"github.com/satanaroom/chat_server/internal/closer"
 	"github.com/satanaroom/chat_server/internal/config"
 	chatService "github.com/satanaroom/chat_server/internal/service/chat"
-	"github.com/satanaroom/chat_server/internal/storage"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -38,8 +38,7 @@ func newServiceProvider() *serviceProvider {
 
 func (s *serviceProvider) ChatService(ctx context.Context) chatService.Service {
 	if s.chatService == nil {
-		chatStorage := storage.NewStorage(s.ChatConfig().Capacity())
-		s.chatService = chatService.NewService(s.AuthClient(ctx), chatStorage)
+		s.chatService = chatService.NewService(s.AuthClient(ctx), channels.NewChannels(s.ChatConfig().Capacity()))
 	}
 
 	return s.chatService

@@ -3,9 +3,9 @@ package chat
 import (
 	"context"
 
+	"github.com/satanaroom/chat_server/internal/channels"
 	authClient "github.com/satanaroom/chat_server/internal/clients/grpc/auth"
 	"github.com/satanaroom/chat_server/internal/model"
-	"github.com/satanaroom/chat_server/internal/storage"
 	chatV1 "github.com/satanaroom/chat_server/pkg/chat_v1"
 )
 
@@ -13,18 +13,17 @@ var _ Service = (*service)(nil)
 
 type Service interface {
 	CreateChat(ctx context.Context, usernames *model.CreateChat) (string, error)
-	ConnectChat(connectInfo *model.ConnectInfo, stream chatV1.ChatV1_ConnectChatServer) error
-	SendMessage(chatId string, message *chatV1.Message) error
+	GetChatChannel(chatId string) (chan *chatV1.Message, error)
 }
 
 type service struct {
-	authClient  authClient.Client
-	chatStorage storage.ChatStorage
+	authClient authClient.Client
+	channels   channels.Channels
 }
 
-func NewService(authClient authClient.Client, chatStorage storage.ChatStorage) *service {
+func NewService(authClient authClient.Client, channels channels.Channels) *service {
 	return &service{
-		authClient:  authClient,
-		chatStorage: chatStorage,
+		authClient: authClient,
+		channels:   channels,
 	}
 }
