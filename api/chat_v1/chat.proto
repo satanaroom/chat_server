@@ -3,6 +3,8 @@ syntax = "proto3";
 package chat_v1;
 
 import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -31,6 +33,20 @@ service ChatV1 {
       body: "*"
     };
   };
+
+  rpc ConnectChat(ConnectChatRequest) returns (stream ConnectChatResponse) {
+    option (google.api.http) = {
+      post: "/chat/v1/connect"
+      body: "*"
+    };
+  };
+
+  rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/chat/v1/send"
+      body: "*"
+    };
+  }
 }
 
 message CreateChatRequest {
@@ -39,6 +55,26 @@ message CreateChatRequest {
 }
 
 message CreateChatResponse {
-  int64 chat_id = 1;
+  string chat_id = 1 [(validate.rules).string.uuid = true];
 }
 
+message ConnectChatRequest {
+  string chat_id = 1 [(validate.rules).string.uuid = true];
+  string username = 2 [(validate.rules).string = {min_len: 5, max_len: 50}];
+}
+
+message Message {
+  string text = 1 [(validate.rules).string = {min_len: 1, max_len: 500}];
+  string from = 2 [(validate.rules).string = {min_len: 5, max_len: 50}];
+  string to = 3 [(validate.rules).string = {min_len: 5, max_len: 50}];
+  google.protobuf.Timestamp sent_at = 4 [(validate.rules).timestamp.required = true];
+}
+
+message ConnectChatResponse {
+  Message message = 1;
+}
+
+message SendMessageRequest {
+  string chat_id = 1 [(validate.rules).string.uuid = true];
+  Message message = 2;
+}
