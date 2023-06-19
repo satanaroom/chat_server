@@ -21,11 +21,13 @@ type serviceProvider struct {
 	httpConfig    config.HTTPConfig
 	swaggerConfig config.SwaggerConfig
 	tlsConfig     config.TLSConfig
+	chatConfig    config.ChatConfig
 
 	authClient  authClient.Client
 	chatService chatService.Service
 
-	tlsCredentials credentials.TransportCredentials
+	tlsAuthCredentials   credentials.TransportCredentials
+	tlsServerCredentials credentials.TransportCredentials
 
 	chatImpl *chatV1.Implementation
 }
@@ -36,7 +38,7 @@ func newServiceProvider() *serviceProvider {
 
 func (s *serviceProvider) ChatService(ctx context.Context) chatService.Service {
 	if s.chatService == nil {
-		chatStorage := storage.NewStorage()
+		chatStorage := storage.NewStorage(s.ChatConfig().Capacity())
 		s.chatService = chatService.NewService(s.AuthClient(ctx), chatStorage)
 	}
 
@@ -58,7 +60,7 @@ func (s *serviceProvider) AuthClientConfig() config.AuthClientConfig {
 
 func (s *serviceProvider) AuthClient(ctx context.Context) authClient.Client {
 	if s.authClient == nil {
-		opts := grpc.WithTransportCredentials(s.TLSCredentials(ctx))
+		opts := grpc.WithTransportCredentials(s.TLSAuthCredentials(ctx))
 
 		conn, err := grpc.DialContext(ctx, s.AuthClientConfig().Host(), opts)
 		if err != nil {
@@ -125,6 +127,19 @@ func (s *serviceProvider) TLSConfig() config.TLSConfig {
 	return s.tlsConfig
 }
 
+func (s *serviceProvider) ChatConfig() config.ChatConfig {
+	if s.chatConfig == nil {
+		cfg, err := config.NewChatConfig()
+		if err != nil {
+			logger.Fatalf("failed to get chat config: %s", err.Error())
+		}
+
+		s.chatConfig = cfg
+	}
+
+	return s.chatConfig
+}
+
 func (s *serviceProvider) ChatImpl(ctx context.Context) *chatV1.Implementation {
 	if s.chatImpl == nil {
 		s.chatImpl = chatV1.NewImplementation(s.ChatService(ctx))
@@ -133,15 +148,28 @@ func (s *serviceProvider) ChatImpl(ctx context.Context) *chatV1.Implementation {
 	return s.chatImpl
 }
 
-func (s *serviceProvider) TLSCredentials(_ context.Context) credentials.TransportCredentials {
-	if s.tlsCredentials == nil {
-		creds, err := credentials.NewClientTLSFromFile(s.TLSConfig().CertFile(), "")
+func (s *serviceProvider) TLSAuthCredentials(_ context.Context) credentials.TransportCredentials {
+	if s.tlsAuthCredentials == nil {
+		creds, err := credentials.NewClientTLSFromFile(s.TLSConfig().AuthCertFile(), "")
 		if err != nil {
-			logger.Fatalf("new client tls from file: %s", err.Error())
+			logger.Fatalf("new auth client tls from file: %s", err.Error())
 		}
 
-		s.tlsCredentials = creds
+		s.tlsAuthCredentials = creds
 	}
 
-	return s.tlsCredentials
+	return s.tlsAuthCredentials
+}
+
+func (s *serviceProvider) TLSServerCredentials(_ context.Context) credentials.TransportCredentials {
+	if s.tlsServerCredentials == nil {
+		creds, err := credentials.NewServerTLSFromFile(s.TLSConfig().ServerCertFile(), s.TLSConfig().ServerKeyFile())
+		if err != nil {
+			logger.Fatalf("new server tls from file: %s", err.Error())
+		}
+
+		s.tlsServerCredentials = creds
+	}
+
+	return s.tlsServerCredentials
 }

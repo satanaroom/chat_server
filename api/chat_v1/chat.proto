@@ -53,18 +53,19 @@ message CreateChatRequest {
 }
 
 message CreateChatResponse {
-  int64 chat_id = 1;
+  string chat_id = 1 [(validate.rules).string.uuid = true];
 }
 
 message ConnectChatRequest {
-  int64 chat_id = 1;
+  string chat_id = 1 [(validate.rules).string.uuid = true];
+  string username = 2 [(validate.rules).string = {min_len: 5, max_len: 50}];
 }
 
 message Message {
-  string text = 1;
-  string from = 2;
-  string to = 3;
-  google.protobuf.Timestamp sent_at = 4;
+  string text = 1 [(validate.rules).string = {min_len: 1, max_len: 500}];
+  string from = 2 [(validate.rules).string = {min_len: 5, max_len: 50}];
+  string to = 3 [(validate.rules).string = {min_len: 5, max_len: 50}];
+  google.protobuf.Timestamp sent_at = 4 [(validate.rules).timestamp.required = true];
 }
 
 message ConnectChatResponse {
@@ -72,5 +73,6 @@ message ConnectChatResponse {
 }
 
 message SendMessageRequest {
-  Message message = 1;
+  string chat_id = 1 [(validate.rules).string.uuid = true];
+  Message message = 2;
 }

@@ -3,12 +3,19 @@ package chat
 import (
 	"context"
 
-	converter "github.com/satanaroom/chat_server/internal/converter/server"
+	"github.com/google/uuid"
 	"github.com/satanaroom/chat_server/internal/model"
+	"github.com/satanaroom/chat_server/internal/sys"
+	"github.com/satanaroom/chat_server/internal/sys/codes"
 )
 
-func (s *service) CreateChat(_ context.Context, usernames *model.CreateChat) (int64, error) {
-	chatId := s.chatStorage.SaveChat(converter.ToChatUsers(usernames))
+func (s *service) CreateChat(_ context.Context, usernames *model.CreateChat) (string, error) {
+	chatID, err := uuid.NewUUID()
+	if err != nil {
+		return "", sys.NewCommonError("failed to generate UUID", codes.Internal)
+	}
 
-	return chatId, nil
+	s.chatStorage.CreateChannel(chatID.String())
+
+	return chatID.String(), nil
 }

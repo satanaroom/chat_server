@@ -12,3 +12,8 @@ type Message struct {
 	To     string
 	SentAt time.Time
 }
+
+type ConnectInfo struct {
+	ChatId   string
+	Username string
+}

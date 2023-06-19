@@ -6,15 +6,8 @@ import (
 )
 
 func (i *Implementation) ConnectChat(req *desc.ConnectChatRequest, stream desc.ChatV1_ConnectChatServer) error {
-
-	if err := i.chatService.ConnectChat(req.GetChatId()); err != nil {
+	if err := i.chatService.ConnectChat(converter.ToConnectInfo(req.GetChatId(), req.GetUsername()), stream); err != nil {
 		return err
-	}
-
-	for message := range i.chatService.GetMessageChannel() {
-		if err := stream.Send(converter.ToConnectChatResponse(message)); err != nil {
-			return err
-		}
 	}
 
 	return nil

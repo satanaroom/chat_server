@@ -25,7 +25,7 @@
     "application/json"
   ],
   "paths": {
-    "/chat/v1/connect": {
+    "/server/v1/connect": {
       "post": {
         "operationId": "ChatV1_ConnectChat",
         "responses": {
@@ -66,7 +66,7 @@
         ]
       }
     },
-    "/chat/v1/create": {
+    "/server/v1/create": {
       "post": {
         "operationId": "ChatV1_CreateChat",
         "responses": {
@@ -98,7 +98,7 @@
         ]
       }
     },
-    "/chat/v1/send": {
+    "/server/v1/send": {
       "post": {
         "operationId": "ChatV1_SendMessage",
         "responses": {
@@ -137,8 +137,10 @@
       "type": "object",
       "properties": {
         "chatId": {
-          "type": "string",
-          "format": "int64"
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
         }
       }
     },
@@ -165,8 +167,7 @@
       "type": "object",
       "properties": {
         "chatId": {
-          "type": "string",
-          "format": "int64"
+          "type": "string"
         }
       }
     },
@@ -191,6 +192,9 @@
     "chat_v1SendMessageRequest": {
       "type": "object",
       "properties": {
+        "chatId": {
+          "type": "string"
+        },
         "message": {
           "$ref": "#/definitions/chat_v1Message"
         }

@@ -100,9 +100,11 @@ func (a *App) initServiceProvider(_ context.Context) error {
 
 func (a *App) initGRPCServer(ctx context.Context) error {
 	a.grpcServer = grpc.NewServer(
+		grpc.Creds(a.serviceProvider.TLSServerCredentials(ctx)),
 		grpc.UnaryInterceptor(
 			grpcMiddleware.ChainUnaryServer(
 				interceptor.ValidateInterceptor,
+				interceptor.ErrorCodesInterceptor,
 				interceptor.NewAuthInterceptor(a.serviceProvider.AuthClient(ctx)).Unary(),
 			),
 		),
