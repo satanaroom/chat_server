@@ -1,4 +1,4 @@
-package access
+package client
 
 import (
 	"github.com/satanaroom/chat_server/internal/model"
