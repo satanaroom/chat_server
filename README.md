@@ -1,7 +1,7 @@
 # Chat-server API for gRPC course project
 
-[![build-and-test](https://github.com/satanaroom/chat_server/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/satanaroom/chat_server/actions/workflows/build-and-test.yml)
-[![golangci-lint](https://github.com/satanaroom/chat_server/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/satanaroom/chat_server/actions/workflows/golangci-lint.yml)
+[![build-and-test](https://github.com/satanaroom/chat_server/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/satanaroom/chat_server/actions/workflows/build-and-test.yml)
+[![golangci-lint](https://github.com/satanaroom/chat_server/actions/workflows/golangci-lint.yml/badge.svg?branch=main)](https://github.com/satanaroom/chat_server/actions/workflows/golangci-lint.yml)
 
 Chat-server API - это микросервис, который предоставляет API для создание чатов, подключения к ним и отправку сообщений.
 
