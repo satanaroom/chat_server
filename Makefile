@@ -1,5 +1,9 @@
 LOCAL_BIN:=$(CURDIR)/bin
 
+.PHONY: build
+build: install-go-deps generate
+	CGO_ENABLED=0 GOOS=linux go build -o bin/chat_server cmd/server/main.go
+
 install-go-deps: vendor-proto
 	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1
 	GOBIN=$(LOCAL_BIN) go install -mod=mod google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
